@@ -1,6 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "==> GoldenHook deploy: build backend & frontend"
+
+BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
+export NODE_OPTIONS=${NODE_OPTIONS:-"--max-old-space-size=2048"}
+
+echo "-- Node version --"
+node -v || true
+npm -v || true
+
+echo "-- Backend build --"
+cd "$BASE_DIR/backend"
+npm ci
+npm run build
+
+echo "-- Frontend build --"
+cd "$BASE_DIR/frontend"
+npm ci
+npm run build
+
+echo "==> Done. Start backend: node dist/main.js (via cPanel Node App)."
+echo "==> Start frontend: node server.js (requires prior 'npm run build')."
+#!/usr/bin/env bash
+set -euo pipefail
+
 # Ensure Node 18 with nvm (optional)
 export NVM_DIR="$HOME/.nvm"
 if [ -d "$NVM_DIR" ]; then . "$NVM_DIR/nvm.sh"; fi
