@@ -15,3 +15,8 @@ debug.log
 dev.sqlite
 uploads/
 /.idea/
+
+# allow example env files
+!**/.env.example
+!frontend/.env.local.example
+!backend/.env.example
