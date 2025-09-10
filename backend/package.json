@@ -6,7 +6,12 @@
   "scripts": {
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "build": "nest build"
+    "build": "nest build",
+    "start:prod": "node dist/main.js",
+    "postinstall": "npm run build"
+  },
+  "engines": {
+    "node": ">=18 <21"
   },
   "dependencies": {
     "@apollo/server": "^4.12.2",

@@ -50,6 +50,16 @@ Backend (из папки backend):
 - npm run build — сборка
 - npm run start:prod — запуск прод‑сборки
 
+## Деплой на cPanel (SSH/Node App)
+1) SSH: ssh -p 21098 goldenh3@goldenhook.com.ua
+2) Код: cd ~/goldenhook && git pull origin main
+3) Окружение: скопируйте .env.example → .env (в backend и frontend по необходимости)
+4) Сборка: bash ./deploy.sh
+5) cPanel → Node.js App:
+   - Backend: App root /goldenh3/goldenhook/backend, Startup file dist/main.js, Node 18
+   - Frontend: App root /goldenh3/goldenhook/frontend, Startup file server.js, Node 18
+6) Проверьте порты/прокси (Passenger/Apache) и SSL
+
 ## Конфигурация .env (backend)
 Минимальный набор (см. backend/.env.example):
 - PORT=4000

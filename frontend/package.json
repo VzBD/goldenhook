@@ -9,6 +9,7 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "node server.js",
+    "postinstall": "next build",
     "lint": "next lint"
   },
   "dependencies": {
