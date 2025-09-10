@@ -7,17 +7,33 @@ BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
 export NODE_OPTIONS=${NODE_OPTIONS:-"--max-old-space-size=2048"}
 
 echo "-- Node version --"
-node -v || true
-npm -v || true
+if ! command -v node >/dev/null 2>&1; then
+	echo "ERROR: node not found in PATH. Enter cPanel Node.js App virtualenv or install nvm (see README)." >&2
+	exit 1
+fi
+node -v
+if ! command -v npm >/dev/null 2>&1; then
+	echo "ERROR: npm not found in PATH." >&2
+	exit 1
+fi
+npm -v
+
+install_deps() {
+	if [ -f package-lock.json ]; then
+		npm ci
+	else
+		npm install
+	fi
+}
 
 echo "-- Backend build --"
 cd "$BASE_DIR/backend"
-npm ci
+install_deps
 npm run build
 
 echo "-- Frontend build --"
 cd "$BASE_DIR/frontend"
-npm ci
+install_deps
 npm run build
 
 echo "==> Done. Start backend: node dist/main.js (via cPanel Node App)."
