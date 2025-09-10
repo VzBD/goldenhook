@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  backend:
+    build: .
+    container_name: fanatik-backend-local
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    restart: unless-stopped
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+    container_name: fanatik-frontend-local
+    ports:
+      - "3001:3000"
+    env_file:
+      - ../../frontend/.env
+    volumes:
+      - ../../frontend:/app
+    depends_on:
+      - backend
+    restart: unless-stopped
+  db:
+    image: postgres:15-alpine
+    container_name: fanatik-db-local
+    environment:
+      POSTGRES_DB: fanatik_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_local:/var/lib/postgresql/data
+volumes:
+  postgres_data_local:

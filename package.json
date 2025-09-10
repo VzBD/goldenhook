@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@sendgrid/mail": "^8.1.5",
+    "nodemailer": "^7.0.6",
+    "postgres": "^3.4.7",
+    "twilio": "^5.8.2"
+  }
+}

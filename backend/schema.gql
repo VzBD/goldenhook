@@ -1,0 +1,63 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type CatalogResult {
+  brands: [String!]!
+  categories: [String!]!
+  items: [Product!]!
+  page: Int!
+  pageSize: Int!
+  total: Int!
+}
+
+type Mutation {
+  createProduct(input: ProductInput!): Product!
+  deleteProduct(id: ID!): Boolean!
+  updateProduct(id: ID!, input: ProductInput!): Product!
+}
+
+type Product {
+  brand: String
+  category: String
+  description: String!
+  id: ID!
+  image: String
+  images: [String]
+  name: String!
+  oldPrice: Float
+  price: Float!
+  related: [Product]
+  reviews: [Review]
+  sku: String
+  specs: [SpecKV]
+}
+
+input ProductInput {
+  brand: String
+  category: String
+  description: String!
+  image: String
+  name: String!
+  price: Float!
+}
+
+type Query {
+  adminProducts(page: Int, pageSize: Int, q: String): CatalogResult!
+  catalog(brand: String, category: String, page: Int, pageSize: Int, q: String): CatalogResult!
+  product(id: ID!): Product
+  products(limit: Int): [Product!]!
+}
+
+type Review {
+  author: String!
+  comment: String!
+  createdAt: String!
+  id: ID!
+  rating: Int!
+}
+
+type SpecKV {
+  key: String!
+  value: String!
+}

@@ -1,0 +1,16 @@
+/* Global styles */
+html, body, #__next { height: 100%; }
+body {
+	margin: 0;
+	font-family: var(--font-sans), system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-family: var(--font-serif), Georgia, 'Times New Roman', serif;
+}
+
+a:focus-visible, button:focus-visible {
+	outline: 2px solid #C7A008;
+	outline-offset: 2px;
+}
