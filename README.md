@@ -21,15 +21,15 @@
    - В репозитории есть шаблоны: frontend/.env.local.example и backend/.env.example
    - Скопируйте их в frontend/.env.local и backend/.env и заполните значения
    - frontend: NEXT_PUBLIC_API_URL=http://localhost:4000 (если фронт ходит прямо в бэк)
-   - backend: PORT=4000, COOKIE_SECRET, SMTP_*, TWILIO_*, GOOGLE_* (см. ниже)
+   - backend: PORT=4000, COOKIE_SECRET, SMTP_*, TWILIO_*, GOOGLE_*, DB_* (см. ниже)
 4) Запуск:
    - В одном терминале: перейти в backend и выполнить npm run start:dev (http://localhost:4000)
    - В другом терминале: перейти в frontend и выполнить npm run dev (http://localhost:3000)
 
 Примечания:
-- Почта: удобно использовать Mailpit/MailHog. Запустите локально (SMTP 1025, UI 8025) и укажите SMTP_HOST=localhost, SMTP_PORT=1025.
-- SMS: используйте тестовый проект Twilio (нужны ACCOUNT_SID/AUTH_TOKEN и номер TWILIO_FROM). На dev отправка обычно ограничена верифицированными номерами.
-- OAuth: в Google Cloud Console создайте OAuth Client (Web) и добавьте redirect URI http://localhost:4000/auth/google/callback.
+- Почта (Mailpit/MailHog): поднимите локально SMTP на 1025 и укажите SMTP_HOST=localhost, SMTP_PORT=1025 (UI обычно на 8025).
+- SMS (Twilio): используйте тестовый проект, задайте ACCOUNT_SID/AUTH_TOKEN и номер TWILIO_FROM (+1...). На dev отправка ограничена верифицированными номерами.
+- OAuth (Google): создайте OAuth Client (Web), redirect URI — http://localhost:4000/auth/google/callback.
 - GraphQL Playground доступен на http://localhost:4000/graphql
 
 ## Основные возможности
@@ -58,11 +58,14 @@ Backend (из папки backend):
 - SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS
 - TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM
 - GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL
+- DB_USE_SQLITE=true, SQLITE_PATH=dev.sqlite (для разработки)
+- Либо Postgres: DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE
+- Админ сид: ADMIN_EMAIL, ADMIN_PASSWORD
 
 Примеры для разработки:
 - Email: SMTP_HOST=localhost, SMTP_PORT=1025, SMTP_USER=, SMTP_PASS=
-- Twilio: укажите креды и номер в формате +1...
-- Google: Authorized redirect URI — http://localhost:4000/auth/google/callback
+- Twilio: задайте креды, TWILIO_FROM вида +1...
+- Google: redirect URI — http://localhost:4000/auth/google/callback
 
 ## Примечания по разработке
 - В dev используется SQLite (файлы БД игнорируются .gitignore)
