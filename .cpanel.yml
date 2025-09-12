@@ -7,13 +7,23 @@
 
 deployment:
   tasks:
-    - /bin/echo "==> cPanel deploy: start"
-    - /bin/echo "Using HOME=$HOME"
+  - /bin/echo "==> cPanel deploy: start"
+  - /bin/echo "Using HOME=$HOME"
 
-    # Backend build in Node App virtualenv
-    - /bin/bash -lc ". $HOME/nodevenv/goldenhook/backend/18/bin/activate && cd $HOME/goldenhook/backend && npm install && npm run build && deactivate"
+  # Backend build in Node App virtualenv
+  - /bin/echo "-- backend: activating nodevenv"
+  - /bin/bash -lc "source $HOME/nodevenv/goldenhook/backend/18/bin/activate || . $HOME/nodevenv/goldenhook/backend/18/bin/activate; node -v; npm -v"
+  - /bin/bash -lc "cd $HOME/goldenhook/backend && echo '-- backend: installing deps' && (npm ci || npm install)"
+  - /bin/bash -lc "cd $HOME/goldenhook/backend && echo '-- backend: ensuring nest cli' && (npx --yes nest --version || npm i -D @nestjs/cli) && npx nest --version"
+  - /bin/bash -lc "cd $HOME/goldenhook/backend && echo '-- backend: building' && npm run build"
+  - /bin/bash -lc "deactivate || true"
 
-    # Frontend build in Node App virtualenv
-    - /bin/bash -lc ". $HOME/nodevenv/goldenhook/frontend/18/bin/activate && cd $HOME/goldenhook/frontend && npm install && npm run build && deactivate"
+  # Frontend build in Node App virtualenv
+  - /bin/echo "-- frontend: activating nodevenv"
+  - /bin/bash -lc "source $HOME/nodevenv/goldenhook/frontend/18/bin/activate || . $HOME/nodevenv/goldenhook/frontend/18/bin/activate; node -v; npm -v"
+  - /bin/bash -lc "cd $HOME/goldenhook/frontend && echo '-- frontend: installing deps' && (npm ci || npm install)"
+  - /bin/bash -lc "cd $HOME/goldenhook/frontend && echo '-- frontend: ensuring next' && npx --yes next --version"
+  - /bin/bash -lc "cd $HOME/goldenhook/frontend && echo '-- frontend: building' && npm run build"
+  - /bin/bash -lc "deactivate || true"
 
-    - /bin/echo "==> cPanel deploy: done"
+  - /bin/echo "==> cPanel deploy: done"
