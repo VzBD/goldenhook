@@ -1,0 +1,19 @@
+# cPanel Git Version Control deployment script
+# Правит релизы через кнопку "Deploy HEAD Commit" в cPanel.
+# Требует настроенные Node.js Apps для обоих сервисов (Node 18):
+#  - Backend App root: goldenhook/backend ; Startup: dist/main.js
+#  - Frontend App root: goldenhook/frontend ; Startup: server.js
+# Если у вас другая версия Node или другой путь, поправьте ниже пути nodevenv.
+
+deployment:
+  tasks:
+    - /bin/echo "==> cPanel deploy: start"
+    - /bin/echo "Using HOME=$HOME"
+
+    # Backend build in Node App virtualenv
+    - /bin/bash -lc ". $HOME/nodevenv/goldenhook/backend/18/bin/activate && cd $HOME/goldenhook/backend && npm install && npm run build && deactivate"
+
+    # Frontend build in Node App virtualenv
+    - /bin/bash -lc ". $HOME/nodevenv/goldenhook/frontend/18/bin/activate && cd $HOME/goldenhook/frontend && npm install && npm run build && deactivate"
+
+    - /bin/echo "==> cPanel deploy: done"
