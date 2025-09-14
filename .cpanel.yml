@@ -1,31 +1,27 @@
 # cPanel Git Version Control deployment script
-# Правит релизы через кнопку "Deploy HEAD Commit" в cPanel.
-# Требует настроенные Node.js Apps для обоих сервисов (Node 18):
-#  - Backend App root: goldenhook/backend ; Startup: dist/main.js
-#  - Frontend App root: goldenhook/frontend ; Startup: server.js
-# Если у вас другая версия Node или другой путь, поправьте ниже пути nodevenv.
-
+# Запускается кнопкой "Deploy HEAD Commit".
+# Требует предварительно созданные Node.js Apps (Node 20+) для backend и frontend.
 deployment:
   tasks:
-  - /bin/echo "==> cPanel deploy: start"
-  - /bin/echo "Using HOME=$HOME"
-  - /bin/bash -lc "echo '-- nodevenv dirs:' && ls -la $HOME/nodevenv || echo 'no $HOME/nodevenv'"
-  - /bin/bash -lc "echo '-- nodevenv tree (depth 4):' && find $HOME/nodevenv -maxdepth 4 -type d -print 2>/dev/null || true"
+    - '/bin/echo "==> cPanel deploy: start"'
+    - '/bin/echo "Using HOME=$HOME"'
+    - '/bin/bash -lc "echo -- nodevenv dirs:; ls -la $HOME/nodevenv || echo no-\$HOME/nodevenv"'
+    - '/bin/bash -lc "echo -- nodevenv tree \(depth 4\):; find $HOME/nodevenv -maxdepth 4 -type d -print 2>/dev/null || true"'
 
-  # Backend build in Node App virtualenv
-  - /bin/echo "-- backend: locating nodevenv/activate"
-  - /bin/bash -lc 'BACK_ACT=$(find "$HOME/nodevenv" -maxdepth 5 -type f -path "*/goldenhook/*backend*/bin/activate" 2>/dev/null | head -n1); if [ -z "$BACK_ACT" ]; then echo "!! backend nodevenv activate not found"; exit 2; fi; echo "backend activate: $BACK_ACT"; source "$BACK_ACT"; node -v; npm -v'
-  - /bin/bash -lc "cd $HOME/goldenhook/backend && echo '-- backend: installing deps' && (npm ci --include=dev --no-optional || npm install --include=dev --no-optional)"
-  - /bin/bash -lc "cd $HOME/goldenhook/backend && echo '-- backend: ensuring nest cli' && (npx --yes nest --version || npm i -D @nestjs/cli) && npx nest --version"
-  - /bin/bash -lc "cd $HOME/goldenhook/backend && echo '-- backend: building' && npm run build"
-  - /bin/bash -lc "deactivate || true"
+    # Backend build in Node App virtualenv
+    - '/bin/echo "-- backend: locating nodevenv/activate"'
+    - '/bin/bash -lc "BACK_ACT=$(find \"$HOME/nodevenv\" -maxdepth 5 -type f -path \"*/goldenhook/*backend*/bin/activate\" 2>/dev/null | head -n1); if [ -z \"$BACK_ACT\" ]; then echo \"!! backend nodevenv activate not found\"; exit 2; fi; echo \"backend activate: $BACK_ACT\"; source \"$BACK_ACT\"; node -v; npm -v"'
+    - '/bin/bash -lc "cd $HOME/goldenhook/backend && echo -- backend: installing deps with optional && npm install --include=dev --include=optional"'
+    - '/bin/bash -lc "cd $HOME/goldenhook/backend && echo -- backend: ensuring nest cli && (npx --yes nest --version || npm i -D @nestjs/cli) && npx nest --version"'
+    - '/bin/bash -lc "cd $HOME/goldenhook/backend && echo -- backend: building && export NODE_OPTIONS=\"--max-old-space-size=1024\" UNDICI_NO_WASM=1 && npm run build"'
+    - '/bin/bash -lc "deactivate || true"'
 
-  # Frontend build in Node App virtualenv
-  - /bin/echo "-- frontend: locating nodevenv/activate"
-  - /bin/bash -lc 'FRONT_ACT=$(find "$HOME/nodevenv" -maxdepth 5 -type f -path "*/goldenhook/*frontend*/bin/activate" 2>/dev/null | head -n1); if [ -z "$FRONT_ACT" ]; then echo "!! frontend nodevenv activate not found"; exit 2; fi; echo "frontend activate: $FRONT_ACT"; source "$FRONT_ACT"; node -v; npm -v'
-  - /bin/bash -lc "cd $HOME/goldenhook/frontend && echo '-- frontend: installing deps' && (npm ci --include=dev --no-optional || npm install --include=dev --no-optional)"
-  - /bin/bash -lc "cd $HOME/goldenhook/frontend && echo '-- frontend: ensuring next' && npx --yes next --version"
-  - /bin/bash -lc "cd $HOME/goldenhook/frontend && echo '-- frontend: building' && npm run build"
-  - /bin/bash -lc "deactivate || true"
+    # Frontend build in Node App virtualenv
+    - '/bin/echo "-- frontend: locating nodevenv/activate"'
+    - '/bin/bash -lc "FRONT_ACT=$(find \"$HOME/nodevenv\" -maxdepth 5 -type f -path \"*/goldenhook/*frontend*/bin/activate\" 2>/dev/null | head -n1); if [ -z \"$FRONT_ACT\" ]; then echo \"!! frontend nodevenv activate not found\"; exit 2; fi; echo \"frontend activate: $FRONT_ACT\"; source \"$FRONT_ACT\"; node -v; npm -v"'
+    - '/bin/bash -lc "cd $HOME/goldenhook/frontend && echo -- frontend: installing deps && npm install --include=dev --include=optional"'
+    - '/bin/bash -lc "cd $HOME/goldenhook/frontend && echo -- frontend: ensuring next && npx --yes next --version"'
+    - '/bin/bash -lc "cd $HOME/goldenhook/frontend && echo -- frontend: building with more memory && export NODE_OPTIONS=\"--max-old-space-size=2048\" UNDICI_NO_WASM=1 NEXT_TELEMETRY_DISABLED=1 && npm run build"'
+    - '/bin/bash -lc "deactivate || true"'
 
-  - /bin/echo "==> cPanel deploy: done"
+    - '/bin/echo "==> cPanel deploy: done"'

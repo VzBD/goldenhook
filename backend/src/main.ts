@@ -2,6 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  // Disable undici WASM to avoid OOM on constrained hosts
+  if (!process.env.UNDICI_NO_WASM) {
+    process.env.UNDICI_NO_WASM = '1';
+  }
   const app = await NestFactory.create(AppModule);
   const frontend = process.env.FRONTEND_URL || 'http://localhost:3000';
   app.enableCors({ origin: [frontend], credentials: true });
