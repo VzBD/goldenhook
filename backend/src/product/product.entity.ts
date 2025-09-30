@@ -27,9 +27,11 @@ export class Product {
 
   // Ниже — дополнительные GraphQL-поля (не сохраняются в БД)
   @Field({ nullable: true })
+  @Column({ nullable: true })
   brand?: string | null;
 
   @Field({ nullable: true })
+  @Column({ nullable: true })
   category?: string | null;
 
   @Field({ nullable: true })
@@ -49,4 +51,8 @@ export class Product {
 
   @Field(() => [Product], { nullable: 'itemsAndList' })
   related?: Product[] | null;
+
+  @Field({ nullable: true })
+  @Column({ type: 'boolean', default: true })
+  inStock?: boolean | null;
 }

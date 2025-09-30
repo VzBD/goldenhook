@@ -44,8 +44,19 @@ export class ProductResolver {
     @Args('brand', { type: () => String, nullable: true }) _brand?: string,
     @Args('q', { type: () => String, nullable: true }) q?: string,
     @Args('category', { type: () => String, nullable: true }) _category?: string,
+    @Args('priceFrom', { type: () => Int, nullable: true }) priceFrom?: number,
+    @Args('priceTo', { type: () => Int, nullable: true }) priceTo?: number,
+    @Args('inStock', { type: () => Boolean, nullable: true }) inStock?: boolean,
+    @Args('sort', { type: () => String, nullable: true }) sort?: 'price_asc' | 'price_desc' | 'new' | 'popular',
   ): Promise<CatalogResult> {
-    const { items, total } = await this.productService.getAll(page, pageSize, q || '');
+    const { items, total } = await this.productService.getAll(page, pageSize, q || '', {
+      brand: _brand,
+      category: _category,
+      priceFrom: priceFrom ?? undefined,
+      priceTo: priceTo ?? undefined,
+      inStock: typeof inStock === 'boolean' ? inStock : undefined,
+      sort: sort as any,
+    });
     const hydrated = items.map((p) => this.hydrateComputedFields(p));
 
     // Заглушки: бренды/категории собираем из имеющихся полей или подставляем

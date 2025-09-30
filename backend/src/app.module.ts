@@ -23,6 +23,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 
+import { HealthController } from './health.controller';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -55,8 +56,8 @@ import * as bcrypt from 'bcryptjs';
   context: ({ req, res }) => ({ req, res }),
     }),
   ],
+  controllers: [MediaController, BalanceController, LiqPayController, ProductController, UserController, HealthController],
   providers: [MediaService, BalanceService, LiqPayService, ProductService, ProductResolver, EmailService, SmsService],
-  controllers: [MediaController, BalanceController, UserController, LiqPayController, ProductController],
 })
 export class AppModule implements OnModuleInit {
   constructor(

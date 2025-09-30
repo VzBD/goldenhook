@@ -1,25 +1,72 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { useQuery } from '@/lib/apollo-hooks';
 import { GET_CATALOG } from '@/lib/queries';
 import { Box, Button, Checkbox, Container, FormControlLabel, Grid, MenuItem, Pagination, Select, SelectChangeEvent, Stack, TextField, Typography, Skeleton } from '@mui/material';
 import ProductCard from './ProductCard';
 
-export default function CatalogView() {
-  const [page, setPage] = useState(1);
-  const [q, setQ] = useState('');
-  const [brand, setBrand] = useState('');
-  const [category, setCategory] = useState('');
-  const [sort, setSort] = useState('');
+type CatalogFilters = {
+  q?: string;
+  brand?: string;
+  category?: string;
+  sort?: string;
+  page?: number;
+  pageSize?: number;
+};
+
+type CatalogData = {
+  items: any[];
+  total: number;
+  page: number;
+  pageSize: number;
+  brands: string[];
+  categories: string[];
+};
+
+export default function CatalogView({ initialFilters, initialData }: { initialFilters?: CatalogFilters; initialData?: CatalogData }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const [page, setPage] = useState(initialFilters?.page ?? 1);
+  const [q, setQ] = useState(initialFilters?.q ?? '');
+  const [brand, setBrand] = useState(initialFilters?.brand ?? '');
+  const [category, setCategory] = useState(initialFilters?.category ?? '');
+  const [sort, setSort] = useState(initialFilters?.sort ?? '');
   const [brandsChecked, setBrandsChecked] = useState<string[]>([]);
   const [categoriesChecked, setCategoriesChecked] = useState<string[]>([]);
 
+  const variables = useMemo(() => ({
+    page,
+    pageSize: initialFilters?.pageSize ?? 12,
+    q: q || undefined,
+    brand: brand || undefined,
+    category: category || undefined,
+    sort: sort || undefined,
+  }), [page, initialFilters?.pageSize, q, brand, category, sort]);
+
   const { data, loading, error } = useQuery<any>(GET_CATALOG, {
-  variables: { page, pageSize: 12, q: q || undefined, brand: brand || undefined, category: category || undefined, sort: sort || undefined },
+    variables,
+    fetchPolicy: 'cache-and-network',
   });
 
-  const total = data?.catalog?.total || 0;
-  const pageSize = data?.catalog?.pageSize || 12;
+  // Sync URL with current filters (SEO-friendly URLs via query params; category may be a path segment on another route)
+  useEffect(() => {
+    const sp = new URLSearchParams();
+    if (q) sp.set('q', q);
+    if (brand) sp.set('brand', brand);
+    if (category) sp.set('category', category);
+    if (sort) sp.set('sort', sort);
+    if (page && page !== 1) sp.set('page', String(page));
+    const query = sp.toString();
+    const url = query ? `${pathname}?${query}` : pathname;
+    // Cast to any to avoid typed routes constraint when building dynamic query strings
+    router.replace(url as any, { scroll: false });
+  }, [q, brand, category, sort, page, pathname, router]);
+
+  const catalog = data?.catalog ?? initialData;
+  const total = catalog?.total || 0;
+  const pageSize = catalog?.pageSize || (initialFilters?.pageSize ?? 12);
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
@@ -30,13 +77,13 @@ export default function CatalogView() {
         <TextField placeholder="Поиск" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} size="small" />
         <Select displayEmpty value={brand} onChange={(e: SelectChangeEvent) => { setBrand(e.target.value); setPage(1); }} size="small" sx={{ minWidth: 160 }}>
           <MenuItem value=""><em>Все бренды</em></MenuItem>
-          {(data?.catalog?.brands || []).map((b: string) => (
+          {(catalog?.brands || []).map((b: string) => (
             <MenuItem key={b} value={b}>{b}</MenuItem>
           ))}
         </Select>
         <Select displayEmpty value={category} onChange={(e: SelectChangeEvent) => { setCategory(e.target.value); setPage(1); }} size="small" sx={{ minWidth: 200 }}>
           <MenuItem value=""><em>Все категории</em></MenuItem>
-          {(data?.catalog?.categories || []).map((c: string) => (
+          {(catalog?.categories || []).map((c: string) => (
             <MenuItem key={c} value={c}>{c}</MenuItem>
           ))}
         </Select>
@@ -90,7 +137,7 @@ export default function CatalogView() {
           <Box sx={{ p: 2, border: '1px solid #eee', borderRadius: 2, mb: 2 }}>
             <Typography variant="subtitle1">Бренды</Typography>
             <Stack>
-              {(data?.catalog?.brands || []).map((b: string) => (
+              {(catalog?.brands || []).map((b: string) => (
                 <FormControlLabel key={b} control={<Checkbox checked={brandsChecked.includes(b)} onChange={(_, ch) => setBrandsChecked((prev) => ch ? [...prev, b] : prev.filter((x) => x !== b))} />} label={b} />
               ))}
             </Stack>
@@ -98,7 +145,7 @@ export default function CatalogView() {
           <Box sx={{ p: 2, border: '1px solid #eee', borderRadius: 2 }}>
             <Typography variant="subtitle1">Категории</Typography>
             <Stack>
-              {(data?.catalog?.categories || []).map((c: string) => (
+              {(catalog?.categories || []).map((c: string) => (
                 <FormControlLabel key={c} control={<Checkbox checked={categoriesChecked.includes(c)} onChange={(_, ch) => setCategoriesChecked((prev) => ch ? [...prev, c] : prev.filter((x) => x !== c))} />} label={c} />
               ))}
             </Stack>
@@ -106,7 +153,7 @@ export default function CatalogView() {
         </Grid>
         <Grid item xs={12} md={9}>
           <Grid container spacing={2}>
-            {(data?.catalog?.items || []).map((p: any) => (
+            {(catalog?.items || []).map((p: any) => (
               <Grid item xs={12} sm={6} md={4} key={p.id}>
                 <ProductCard product={p} />
               </Grid>
