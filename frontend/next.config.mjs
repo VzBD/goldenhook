@@ -12,7 +12,7 @@ const nextConfig = {
   },
   output: 'standalone',
   webpack: (config) => {
-    // Явный alias для '@/...' -> 'src'
+    // Явно настраиваем alias для '@/...' -> 'src', чтобы избежать проблем резолва на сервере
     config.resolve.alias['@'] = path.resolve(__dirname, 'src');
     return config;
   },
