@@ -25,9 +25,9 @@ export class ProductService {
   ): Promise<{ items: Product[]; total: number }> {
     const where: FindOptionsWhere<Product> = {};
     if (search) where.name = Like(`%${search}%`);
-    if (opts?.brand) where.brand = opts.brand;
-    if (opts?.category) where.category = opts.category;
-    if (typeof opts?.inStock === 'boolean') where.inStock = opts.inStock;
+  if (opts?.brand) where.brand = opts.brand as any;
+  if (opts?.category) where.category = opts.category as any;
+  if (typeof opts?.inStock === 'boolean') where.inStock = opts.inStock as any;
 
     if (opts?.priceFrom != null && opts?.priceTo != null) {
       (where as any).price = Between(opts.priceFrom, opts.priceTo);
@@ -41,7 +41,7 @@ export class ProductService {
     if (opts?.sort === 'price_asc') order = { price: 'ASC' };
     if (opts?.sort === 'price_desc') order = { price: 'DESC' };
     if (opts?.sort === 'new') order = { id: 'DESC' };
-    // popular: оставим как id DESC заглушку
+  // popular -> пока id DESC
 
     const [items, total] = await this.productRepository.findAndCount({
       where,

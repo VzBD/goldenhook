@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useQuery } from '@/lib/apollo-hooks';
 import { GET_CATALOG } from '@/lib/queries';
 import { Box, Button, Checkbox, Container, FormControlLabel, Grid, MenuItem, Pagination, Select, SelectChangeEvent, Stack, TextField, Typography, Skeleton } from '@mui/material';
@@ -10,6 +10,9 @@ type CatalogFilters = {
   q?: string;
   brand?: string;
   category?: string;
+  priceFrom?: number;
+  priceTo?: number;
+  inStock?: boolean;
   sort?: string;
   page?: number;
   pageSize?: number;
@@ -26,13 +29,15 @@ type CatalogData = {
 
 export default function CatalogView({ initialFilters, initialData }: { initialFilters?: CatalogFilters; initialData?: CatalogData }) {
   const router = useRouter();
-  const pathname = usePathname();
 
   const [page, setPage] = useState(initialFilters?.page ?? 1);
   const [q, setQ] = useState(initialFilters?.q ?? '');
   const [brand, setBrand] = useState(initialFilters?.brand ?? '');
   const [category, setCategory] = useState(initialFilters?.category ?? '');
   const [sort, setSort] = useState(initialFilters?.sort ?? '');
+  const [priceFrom, setPriceFrom] = useState<number | ''>(initialFilters?.priceFrom ?? '');
+  const [priceTo, setPriceTo] = useState<number | ''>(initialFilters?.priceTo ?? '');
+  const [inStock, setInStock] = useState<boolean | ''>(typeof initialFilters?.inStock === 'boolean' ? initialFilters!.inStock : '');
   const [brandsChecked, setBrandsChecked] = useState<string[]>([]);
   const [categoriesChecked, setCategoriesChecked] = useState<string[]>([]);
 
@@ -42,27 +47,32 @@ export default function CatalogView({ initialFilters, initialData }: { initialFi
     q: q || undefined,
     brand: brand || undefined,
     category: category || undefined,
+    priceFrom: priceFrom === '' ? undefined : Number(priceFrom),
+    priceTo: priceTo === '' ? undefined : Number(priceTo),
+    inStock: inStock === '' ? undefined : Boolean(inStock),
     sort: sort || undefined,
-  }), [page, initialFilters?.pageSize, q, brand, category, sort]);
+  }), [page, initialFilters?.pageSize, q, brand, category, priceFrom, priceTo, inStock, sort]);
 
   const { data, loading, error } = useQuery<any>(GET_CATALOG, {
     variables,
     fetchPolicy: 'cache-and-network',
   });
 
-  // Sync URL with current filters (SEO-friendly URLs via query params; category may be a path segment on another route)
+  // Обновляем URL согласно текущим фильтрам. Категорию выносим в сегмент пути.
   useEffect(() => {
     const sp = new URLSearchParams();
-    if (q) sp.set('q', q);
-    if (brand) sp.set('brand', brand);
-    if (category) sp.set('category', category);
-    if (sort) sp.set('sort', sort);
+    if (q) sp.set('q', String(q));
+    if (brand) sp.set('brand', String(brand));
+    if (priceFrom !== '') sp.set('price_from', String(priceFrom));
+    if (priceTo !== '') sp.set('price_to', String(priceTo));
+    if (inStock !== '') sp.set('inStock', '1');
+    if (sort) sp.set('sort', String(sort));
     if (page && page !== 1) sp.set('page', String(page));
-    const query = sp.toString();
-    const url = query ? `${pathname}?${query}` : pathname;
-    // Cast to any to avoid typed routes constraint when building dynamic query strings
+    const qs = sp.toString();
+    const base = category ? `/catalog/${encodeURIComponent(category)}` : '/catalog';
+    const url = qs ? `${base}?${qs}` : base;
     router.replace(url as any, { scroll: false });
-  }, [q, brand, category, sort, page, pathname, router]);
+  }, [q, brand, category, priceFrom, priceTo, inStock, sort, page, router]);
 
   const catalog = data?.catalog ?? initialData;
   const total = catalog?.total || 0;
@@ -75,6 +85,8 @@ export default function CatalogView({ initialFilters, initialData }: { initialFi
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 3 }}>
         <TextField placeholder="Поиск" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} size="small" />
+        <TextField placeholder="Цена от" type="number" value={priceFrom} onChange={(e) => { setPriceFrom(e.target.value === '' ? '' : Number(e.target.value)); setPage(1); }} size="small" sx={{ width: 120 }} />
+        <TextField placeholder="до" type="number" value={priceTo} onChange={(e) => { setPriceTo(e.target.value === '' ? '' : Number(e.target.value)); setPage(1); }} size="small" sx={{ width: 120 }} />
         <Select displayEmpty value={brand} onChange={(e: SelectChangeEvent) => { setBrand(e.target.value); setPage(1); }} size="small" sx={{ minWidth: 160 }}>
           <MenuItem value=""><em>Все бренды</em></MenuItem>
           {(catalog?.brands || []).map((b: string) => (
@@ -87,6 +99,7 @@ export default function CatalogView({ initialFilters, initialData }: { initialFi
             <MenuItem key={c} value={c}>{c}</MenuItem>
           ))}
         </Select>
+        <FormControlLabel control={<Checkbox checked={!!inStock} onChange={(_, ch) => { setInStock(ch ? true : ''); setPage(1); }} />} label="В наличии" />
         <Select displayEmpty value={sort} onChange={(e: SelectChangeEvent) => { setSort(e.target.value); setPage(1); }} size="small" sx={{ minWidth: 200 }}>
           <MenuItem value=""><em>Сортировка</em></MenuItem>
           <MenuItem value="price_asc">Цена: по возрастанию</MenuItem>
@@ -94,7 +107,7 @@ export default function CatalogView({ initialFilters, initialData }: { initialFi
           <MenuItem value="new">Новинки</MenuItem>
           <MenuItem value="popular">Популярное</MenuItem>
         </Select>
-        <Button variant="text" onClick={() => { setQ(''); setBrand(''); setCategory(''); setSort(''); setPage(1); }}>Сбросить фильтры</Button>
+        <Button variant="text" onClick={() => { setQ(''); setBrand(''); setCategory(''); setPriceFrom(''); setPriceTo(''); setInStock(''); setSort(''); setPage(1); }}>Сбросить фильтры</Button>
       </Stack>
 
       {loading && (

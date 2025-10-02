@@ -1,45 +1,59 @@
 import Page from '@/components/layout/Page';
 import CatalogView from '@/components/CatalogView';
 
-type SearchParams = { [key: string]: string | string[] | undefined };
+type Search = { [k: string]: string | string[] | undefined };
 
-export default async function CatalogPage({ searchParams }: { searchParams: SearchParams }) {
-  const page = Number(searchParams.page ?? '1') || 1;
-  const q = typeof searchParams.q === 'string' ? searchParams.q : '';
-  const brand = typeof searchParams.brand === 'string' ? searchParams.brand : '';
-  const category = typeof searchParams.category === 'string' ? searchParams.category : '';
-  const sort = typeof searchParams.sort === 'string' ? searchParams.sort : '';
+function parseFilters(searchParams: Search) {
+  const sp = new URLSearchParams(searchParams as any);
+  const q = sp.get('q') || '';
+  const priceFrom = sp.get('price_from');
+  const priceTo = sp.get('price_to');
+  const inStock = sp.get('inStock');
+  const sort = sp.get('sort') || '';
+  const page = Number(sp.get('page') || '1');
+  return {
+    q,
+    brand: '',
+    category: '',
+    priceFrom: priceFrom ? Number(priceFrom) : undefined,
+    priceTo: priceTo ? Number(priceTo) : undefined,
+    inStock: inStock === '1' ? true : undefined,
+    sort: sort || undefined,
+    page,
+    pageSize: 12,
+  };
+}
 
-  const variables = { page, pageSize: 12, q: q || undefined, brand: brand || undefined, category: category || undefined };
-
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-  const res = await fetch(`${API_URL}/graphql`, {
+async function fetchCatalog(vars: any) {
+  const api = process.env.NEXT_PUBLIC_GRAPHQL_API_URL || 'http://localhost:4000/graphql';
+  const query = `
+    query Catalog($page: Int, $pageSize: Int, $brand: String, $q: String, $category: String, $priceFrom: Int, $priceTo: Int, $inStock: Boolean, $sort: String) {
+      catalog(page: $page, pageSize: $pageSize, brand: $brand, q: $q, category: $category, priceFrom: $priceFrom, priceTo: $priceTo, inStock: $inStock, sort: $sort) {
+        items { id name price image brand category }
+        total
+        page
+        pageSize
+        brands
+        categories
+      }
+    }
+  `;
+  const res = await fetch(api, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      query: `
-        query Catalog($page: Int, $pageSize: Int, $brand: String, $q: String, $category: String) {
-          catalog(page: $page, pageSize: $pageSize, brand: $brand, q: $q, category: $category) {
-            items { id name price image brand category }
-            total
-            page
-            pageSize
-            brands
-            categories
-          }
-        }
-      `,
-      variables,
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, variables: vars }),
     next: { revalidate: 60 },
   });
-
   const json = await res.json();
-  const initialData = json?.data?.catalog ?? null;
+  return json?.data?.catalog;
+}
 
+export default async function CatalogPage({ searchParams }: { searchParams: Search }) {
+  const vars = parseFilters(searchParams);
+  const catalog = await fetchCatalog(vars);
   return (
     <Page>
-      <CatalogView initialFilters={{ page, q, brand, category, sort, pageSize: 12 }} initialData={initialData} />
+      <CatalogView initialFilters={vars} initialData={catalog} />
     </Page>
   );
 }

@@ -3,11 +3,19 @@ import { useQuery } from '@/lib/apollo-hooks';
 import { GET_PRODUCT } from '@/lib/queries';
 import { Box, Button, Container, Grid, ImageList, ImageListItem, Rating, Stack, TextField, Typography } from '@mui/material';
 import { useCart } from '@/contexts/CartContext';
+import { useEffect } from 'react';
+import { analytics } from '@/lib/analytics';
 
 export default function ProductView({ id }: { id: string }) {
   const { data, loading, error } = useQuery<any>(GET_PRODUCT, { variables: { id } });
   const p = data?.product;
   const { addItem } = useCart();
+
+  useEffect(() => {
+    if (p) {
+      analytics.viewItem({ id: p.id, name: p.name, price: p.price })
+    }
+  }, [p])
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -30,7 +38,10 @@ export default function ProductView({ id }: { id: string }) {
               <Typography sx={{ mt: 1 }} color="text.secondary">Артикул: {p.sku} · Бренд: {p.brand}</Typography>
               <Typography variant="h5" sx={{ mt: 2 }}>{p.price} ₽ {p.oldPrice ? <Typography component="span" color="text.secondary" sx={{ textDecoration: 'line-through', ml: 1 }}>{p.oldPrice} ₽</Typography> : null}</Typography>
               <Box sx={{ mt: 2 }}>
-                <Button variant="contained" color="primary" onClick={() => addItem({ id: p.id, name: p.name, price: p.price, image: p.images?.[0] })}>
+                <Button variant="contained" color="primary" onClick={() => {
+                  addItem({ id: p.id, name: p.name, price: p.price, image: p.images?.[0] })
+                  analytics.addToCart({ id: p.id, name: p.name, price: p.price, quantity: 1 })
+                }}>
                   Купить
                 </Button>
               </Box>

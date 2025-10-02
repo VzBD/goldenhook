@@ -7,13 +7,27 @@ export const GET_HOME_FEED = gql`
 `;
 
 export const GET_CATALOG = gql`
-  query Catalog($page: Int = 1, $pageSize: Int = 12, $brand: String, $q: String, $category: String) {
+  query Catalog(
+    $page: Int = 1,
+    $pageSize: Int = 12,
+    $brand: String,
+    $q: String,
+    $category: String,
+    $priceFrom: Int,
+    $priceTo: Int,
+    $inStock: Boolean,
+    $sort: String
+  ) {
     catalog(
-      page: $page
-      pageSize: $pageSize
-      brand: $brand
-      q: $q
-      category: $category
+      page: $page,
+      pageSize: $pageSize,
+      brand: $brand,
+      q: $q,
+      category: $category,
+      priceFrom: $priceFrom,
+      priceTo: $priceTo,
+      inStock: $inStock,
+      sort: $sort
     ) {
       items { id name price image brand category }
       total
