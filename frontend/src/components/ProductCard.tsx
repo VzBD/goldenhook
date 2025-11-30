@@ -1,5 +1,6 @@
 'use client';
 import { Card, CardActionArea, CardContent, CardMedia, Typography, Box, Button, Chip, Stack, useTheme } from '@mui/material';
+import styles from './ProductCard.module.css';
 import { useState } from 'react';
 import QuickViewModal from './QuickViewModal';
 
@@ -53,7 +54,7 @@ export default function ProductCard({ product }: { product: P }) {
               <Stack direction="row" spacing={1} sx={{ mt: 1, justifyContent: 'center' }}>
                 {product.images.map((img, idx) => (
                   <Box key={idx} sx={{ width: 32, height: 32, borderRadius: 2, overflow: 'hidden', border: '1px solid #31343b', bgcolor: '#23272f' }}>
-                    <img src={img} alt={product.name + idx} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 2 }} />
+                    <img src={img} alt={product.name + idx} className={styles.productImgThumb} />
                   </Box>
                 ))}
               </Stack>

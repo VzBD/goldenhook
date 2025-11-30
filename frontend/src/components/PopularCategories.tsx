@@ -2,14 +2,14 @@
 import { Grid, Card, CardActionArea, CardContent, Typography } from '@mui/material';
 
 const items = [
-  { title: 'Электроника' },
-  { title: 'Одежда и обувь' },
-  { title: 'Дом и интерьер' },
-  { title: 'Красота и здоровье' },
-  { title: 'Детские товары' },
-  { title: 'Спорт и отдых' },
-  { title: 'Автотовары' },
-  { title: 'Аксессуары' },
+  { title: 'Електроніка' },
+  { title: 'Одяг та взуття' },
+  { title: 'Дім та інтерʼєр' },
+  { title: 'Краса та здоровʼя' },
+  { title: 'Дитячі товари' },
+  { title: 'Спорт і відпочинок' },
+  { title: 'Автотовари' },
+  { title: 'Аксесуари' },
 ];
 
 export default function PopularCategories() {

@@ -8,7 +8,7 @@ export default function Providers({ children, initialTheme }: { children: React.
   return (
     <ApolloProvider client={client}>
       <CartProvider>
-  <ThemeModeProvider initialMode={initialTheme}>
+        <ThemeModeProvider initialMode={initialTheme ?? 'dark'}>
           {children}
         </ThemeModeProvider>
       </CartProvider>

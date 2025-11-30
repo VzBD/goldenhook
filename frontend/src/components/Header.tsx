@@ -12,7 +12,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 
 const catalogItems = [
-  'Электроника','Одежда и обувь','Дом и интерьер','Красота и здоровье','Детские товары','Спорт и отдых','Автотовары','Аксессуары'
+  'Електроніка','Одяг та взуття','Дім та інтерʼєр','Краса та здоровʼя','Дитячі товари','Спорт і відпочинок','Автотовари','Аксесуари'
 ];
 
 export default function Header() {
@@ -36,12 +36,12 @@ export default function Header() {
       <Container maxWidth="lg">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
-            <Link href="/" style={{ textDecoration: 'none' }} aria-label="На главную">
+            <Link href="/" style={{ textDecoration: 'none' }} aria-label="На головну">
               <Logo />
             </Link>
           </Box>
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'nowrap' }}>
-            <Button component={Link} href="/" color="primary">Главная</Button>
+            <Button component={Link} href="/" color="primary">Головна</Button>
             <Button
               color="primary"
               onMouseEnter={handleOpen}
@@ -51,7 +51,7 @@ export default function Header() {
             >Каталог</Button>
             <TextField
               size="small"
-              placeholder="Поиск..."
+              placeholder="Пошук..."
               value={q}
               onChange={(e)=>setQ(e.target.value)}
               onKeyDown={(e)=>{ if(e.key==='Enter'){ router.push(`/catalog?q=${encodeURIComponent(q)}`); } }}

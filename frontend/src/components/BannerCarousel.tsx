@@ -2,9 +2,9 @@
 import { Box, Typography } from '@mui/material';
 
 const banners = [
-  { id: 1, title: 'Лучшие предложения', subtitle: 'Скидки до 30% на популярные товары', img: '/images/promo-1.jpg' },
-  { id: 2, title: 'Новинки', subtitle: 'Свежие поступления для вашего дома и семьи', img: '/images/promo-2.jpg' },
-  { id: 3, title: 'Хиты продаж', subtitle: 'Топовые товары сезона', img: '/images/promo-3.jpg' },
+  { id: 1, title: 'Найкращі пропозиції', subtitle: 'Знижки до 30% на популярні товари', img: '/images/promo-1.jpg' },
+  { id: 2, title: 'Новинки', subtitle: 'Свіжі надходження для вашого дому та сімʼї', img: '/images/promo-2.jpg' },
+  { id: 3, title: 'Хіти продажу', subtitle: 'Топові товари сезону', img: '/images/promo-3.jpg' },
 ];
 
 export default function BannerCarousel() {

@@ -1,6 +1,65 @@
 # Copilot instructions for GoldenHook
 
 This repo is a full‑stack e‑commerce app with a hard boundary between frontend (Next.js App Router) and backend (NestJS GraphQL). Follow these conventions to be productive immediately.
+---
+
+# Инструкции для AI-агентов (RU)
+
+GoldenHook — полнофункциональное e-commerce приложение с чётким разделением фронтенда и бэкенда.
+
+## Архитектура
+- **Фронтенд**: `frontend/` (Next.js 14, TypeScript, MUI, Apollo Client)
+  - App Router: `frontend/src/app/**`.
+  - Apollo Client: `frontend/src/lib/apollo-client.ts` (использует `NEXT_PUBLIC_GRAPHQL_API_URL`).
+  - Алиасы: `@` → `frontend/src` (см. `frontend/tsconfig.json`, `frontend/next.config.mjs`).
+  - Каталог: SSR/ISR, гидрация данных — `src/app/catalog/page.tsx`, динамический `src/app/catalog/[category]/page.tsx`.
+  - UI/data layer: пример — `src/components/CatalogView.tsx` + `src/lib/queries.ts`.
+- **Бэкенд**: `backend/` (NestJS 11, GraphQL Apollo, TypeORM)
+  - Листинг товаров, фильтры, сортировка: `backend/src/product/product.service.ts`.
+  - Google OAuth: `backend/src/auth/google.strategy.ts` (включение через env).
+  - Интеграции: Nodemailer (email), Twilio (SMS), Google OAuth (passport).
+
+## Потоки данных и контракты
+- GraphQL endpoint: `/graphql` (NestJS).
+- Основные формы запросов: `frontend/src/lib/queries.ts` (например, `GET_CATALOG`). Переменные: пагинация, фильтры (`q, brand, category, priceFrom, priceTo, inStock, sort`).
+- SSR fetch для каталога: POST к GraphQL, см. `frontend/src/app/catalog/page.tsx` (server component), передача `initialData` в `CatalogView` (client component). Клиент синхронизирует URL (querystring + category path).
+
+## Конвенции и паттерны
+- Импорты через `@/…` из `frontend/src`. Алиасы должны совпадать в TS и Webpack.
+- Next config — ESM. Для `__dirname` используйте `fileURLToPath(import.meta.url)`.
+- Публичные env-переменные (build time):
+  - `NEXT_PUBLIC_GRAPHQL_API_URL` — Apollo client и SSR fetch.
+  - `NEXT_PUBLIC_API_URL` — для HTTP-роутов (например, `/auth/google`).
+- Бэкенд env: см. `backend/.env.example`.
+- URL-синхронизация каталога: `/catalog` или `/catalog/[category]?q=...&price_from=...&inStock=1&sort=...&page=...`.
+- SSR-cookie для темы (светлая/тёмная), переключатель в шапке.
+
+## Сборка, запуск, деплой
+- Фронтенд (`frontend/`):
+  - `npm run dev`, `npm run build`.
+  - Прод: `node .next/standalone/server.js` (`output: 'standalone'`).
+- Бэкенд (`backend/`):
+  - `npm run start:dev`, `npm run build`, `npm run start:prod`.
+- Важно: rebuild после изменения env (Next public vars инлайнится при билде).
+
+## Тестирование и отладка
+- GraphQL Playground: `http://localhost:4000/graphql`.
+- Частая ошибка: `__dirname is not defined` в Next config — используйте ESM-паттерн.
+- Если не работает алиас `@/…`, проверьте TS и Webpack alias и директорию билда.
+
+## Примеры изменений
+- Добавление фильтра каталога:
+  1. Обновить query/types в `frontend/src/lib/queries.ts` и `CatalogView.tsx`.
+  2. Расширить SSR парсинг в `src/app/catalog/page.tsx`.
+  3. Реализовать фильтр в `backend/src/product/product.service.ts` через TypeORM.
+
+## Ключевые файлы для ознакомления
+- `frontend/next.config.mjs`, `frontend/tsconfig.json`
+- `frontend/src/app/catalog/page.tsx`, `frontend/src/components/CatalogView.tsx`, `frontend/src/lib/queries.ts`
+- `backend/src/product/product.service.ts`, `backend/src/auth/google.strategy.ts`
+- `goldenhook/README.md` — обзор архитектуры
+
+---
 
 ## Architecture at a glance
 - Frontend: `frontend/` (Next.js 14, TS, MUI, Apollo Client)
