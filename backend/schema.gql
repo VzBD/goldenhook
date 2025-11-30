@@ -24,6 +24,7 @@ type Product {
   id: ID!
   image: String
   images: [String]
+  inStock: Boolean
   name: String!
   oldPrice: Float
   price: Float!
@@ -44,7 +45,7 @@ input ProductInput {
 
 type Query {
   adminProducts(page: Int, pageSize: Int, q: String): CatalogResult!
-  catalog(brand: String, category: String, page: Int, pageSize: Int, q: String): CatalogResult!
+  catalog(brand: String, category: String, inStock: Boolean, page: Int, pageSize: Int, priceFrom: Int, priceTo: Int, q: String, sort: String): CatalogResult!
   product(id: ID!): Product
   products(limit: Int): [Product!]!
 }

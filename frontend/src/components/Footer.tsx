@@ -4,7 +4,17 @@ import NextLink from 'next/link';
 
 export default function Footer() {
   return (
-    <Box component="footer" sx={{ mt: 8, pt: 6, pb: 4, bgcolor: '#0f0f0f', color: '#fff' }}>
+    <Box component="footer" sx={{
+      mt: 8,
+      pt: 6,
+      pb: 4,
+      bgcolor: 'linear-gradient(90deg, #111111 0%, #C7A008 100%)',
+      color: '#fff',
+      boxShadow: '0 -4px 24px rgba(199,160,8,0.12)',
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      transition: 'background 0.5s',
+    }}>
       <Container maxWidth="lg" sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr 1fr' }, gap: 4 }}>
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>Golden Hook</Typography>

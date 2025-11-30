@@ -11,7 +11,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
 export const metadata: Metadata = {
   title: 'Golden Hook',
-  description: 'Интернет-магазин товаров для рыбалки и туризма',
+  description: 'Универсальный интернет-магазин: электроника, одежда, дом, спорт, красота и многое другое',
   metadataBase: new URL(siteUrl),
   alternates: { canonical: '/' },
   openGraph: {
@@ -19,12 +19,12 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: 'Golden Hook',
     title: 'Golden Hook',
-    description: 'Интернет-магазин товаров для рыбалки и туризма',
+    description: 'Универсальный интернет-магазин: электроника, одежда, дом, спорт, красота и многое другое',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Golden Hook',
-    description: 'Интернет-магазин товаров для рыбалки и туризма',
+    description: 'Универсальный интернет-магазин: электроника, одежда, дом, спорт, красота и многое другое',
   }
 }
 

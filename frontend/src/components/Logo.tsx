@@ -17,7 +17,7 @@ export default function Logo() {
       }}
       className={playfair.className}
     >
-      Golden Hook
+      SoftLocked by my self
     </Typography>
   );
 }

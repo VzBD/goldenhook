@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import twilio from 'twilio';
+import { Twilio } from 'twilio';
 
 @Injectable()
 export class SmsService {
-  private client = (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN)
-    ? twilio(process.env.TWILIO_ACCOUNT_SID as string, process.env.TWILIO_AUTH_TOKEN as string)
+  private client = (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_ACCOUNT_SID.startsWith('AC'))
+    ? new Twilio(process.env.TWILIO_ACCOUNT_SID as string, process.env.TWILIO_AUTH_TOKEN as string)
     : null;
 
   async sendSms(to: string, body: string) {

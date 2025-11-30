@@ -12,7 +12,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 
 const catalogItems = [
-  'Рыбалка','Удилища','Катушки','Леска и шнуры','Крючки и оснастка','Туризм и кемпинг','Палатки','Одежда и обувь'
+  'Электроника','Одежда и обувь','Дом и интерьер','Красота и здоровье','Детские товары','Спорт и отдых','Автотовары','Аксессуары'
 ];
 
 export default function Header() {
@@ -26,7 +26,13 @@ export default function Header() {
   const categories: string[] = data?.catalog?.categories ?? [];
   const { mode, toggle } = useThemeMode();
   return (
-    <AppBar position="sticky" color="inherit" elevation={0} sx={{ borderBottom: '1px solid #eee', backdropFilter: 'saturate(180%) blur(6px)', bgcolor: 'rgba(255,255,255,0.8)' }}>
+    <AppBar position="sticky" color="inherit" elevation={3} sx={{
+      borderBottom: '1px solid #eee',
+      backdropFilter: 'saturate(180%) blur(6px)',
+      bgcolor: 'linear-gradient(90deg, #f7f6f2 0%, #fffbe5 100%)',
+      boxShadow: '0 4px 24px rgba(199,160,8,0.08)',
+      transition: 'background 0.5s',
+    }}>
       <Container maxWidth="lg">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>

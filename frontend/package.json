@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-  "node": ">=20 <23"
+    "node": ">=20 <23"
   },
   "scripts": {
     "dev": "next dev -p 3000",
@@ -18,13 +18,14 @@
     "@hookform/resolvers": "^3.10.0",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
-  "graphql": "^16.11.0",
-  "cross-fetch": "^4.0.0",
+    "cross-fetch": "^4.0.0",
+    "graphql": "^16.11.0",
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hook-form": "^7.53.0",
     "react-input-mask": "^3.0.0-alpha.2",
+    "rxjs": "^7.8.2",
     "zod": "^3.25.76"
   },
   "devDependencies": {

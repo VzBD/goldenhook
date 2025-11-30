@@ -5,7 +5,7 @@ import ProductCard from './ProductCard';
 const demo = [
   { id: 1, name: 'Удилище Golden X', price: 4990, image: '/placeholder.png' },
   { id: 2, name: 'Катушка Storm 3000', price: 6990, image: '/placeholder.png' },
-  { id: 3, name: 'Леска Ultra 0.25', price: 590, image: '/placeholder.png' },
+  { id: 3, name: 'Смарт-часы Ultra', price: 5900, image: '/placeholder.png' },
   { id: 4, name: 'Палатка Trek 2', price: 12990, image: '/placeholder.png' },
 ];
 
